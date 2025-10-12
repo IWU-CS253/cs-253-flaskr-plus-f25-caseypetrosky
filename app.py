@@ -73,12 +73,12 @@ def show_entries():
 
     if filter_category and filter_category != 'all':
         cur = db.execute(
-            'select title, text, category from entries where category = ? order by id desc',
+            'select title, text, category, id from entries where category = ? order by id desc',
             [filter_category]
         )
     else:
         cur = db.execute(
-            'select title, text, category from entries order by id desc',
+            'select title, text, category, id from entries order by id desc',
         )
     entries = cur.fetchall()
 
@@ -97,3 +97,12 @@ def add_entry():
     db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
+
+@app.route('/delete/<int:id>',methods = ['POST'])
+def del_entry(id):
+    db = get_db()
+    db.execute('delete from entries where id = ?', [id])
+    db.commit()
+    flash('Entry was successfully deleted')
+    return redirect(url_for('show_entries'))
+

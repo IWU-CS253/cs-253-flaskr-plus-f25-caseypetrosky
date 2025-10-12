@@ -31,6 +31,10 @@
       {% if entry.category %}
       <p>Category: {{ entry.category }}</p>
         {% endif %}
+
+        <form action="{{ url_for('del_entry', id=entry.id) }}" method="post">
+            <input type="submit" value="Delete" >
+        </form>
       </li>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em></li>
