@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+
   <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
     <dl>
       <dt>Title:
@@ -11,6 +12,19 @@
       <dd><input type="submit" value="Share">
     </dl>
   </form>
+    <br>
+     <form action="{{ url_for('show_entries') }}" method="get">
+        <label for="category-filter">Filter by catgeory:</label>
+        <select name="category" id="category-filter" onchange="this.form.submit()">
+            <option value="all">All</option>
+            {% for cat in categories %}
+                <option value="{{ cat }}" {% if cat ==filter_category %} selected {% endif %}>
+                    {{ cat }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
   <ul class="entries">
   {% for entry in entries %}
     <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}

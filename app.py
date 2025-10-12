@@ -12,6 +12,8 @@
 
 import os
 from sqlite3 import dbapi2 as sqlite3
+from unicodedata import category
+
 from flask import Flask, request, g, redirect, url_for, render_template, flash
 
 
@@ -67,9 +69,24 @@ def close_db(error):
 @app.route('/')
 def show_entries():
     db = get_db()
-    cur = db.execute('select title, text, category from entries order by id desc')
+    filter_category = request.args.get('category')
+
+    if filter_category and filter_category != 'all':
+        cur = db.execute(
+            'select title, text, category from entries where category = ? order by id desc',
+            [filter_category]
+        )
+    else:
+        cur = db.execute(
+            'select title, text, category from entries order by id desc',
+        )
     entries = cur.fetchall()
-    return render_template('show_entries.html', entries=entries)
+
+    #get distinct category options for dropdown and convert to list
+    category_options = db.execute('select distinct category from entries order by id desc')
+    categories = [row['category'] for row in category_options.fetchall()]
+
+    return render_template('show_entries.html', entries=entries,categories=categories,filter_category=filter_category)
 
 
 @app.route('/add', methods=['POST'])
